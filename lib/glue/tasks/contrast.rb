@@ -104,7 +104,8 @@ class Glue::Contrast < Glue::BaseTask
       :site         => @tracker.options[:jira_api_url],
       :context_path => @tracker.options[:jira_api_context],
       :auth_type    => :basic,
-      :http_debug   => :true
+      :http_debug   => tracker.options[:debug],
+      :use_ssl => tracker.options[:jira_use_ssl]
     }
     @project = @tracker.options[:jira_project]
     @component = @tracker.options[:jira_component]

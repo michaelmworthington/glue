@@ -124,6 +124,9 @@ module Glue::Options
         opts.on "--jira-api-url URL", "Specify the jira rest api endpoint. Eg. jemurai.atlassian.net." do |url|
           options[:jira_api_url] = url
         end
+        opts.on "--jira-use-ssl USE_SSL", "True/False - Whether or not to use SSL when connecting to JIRA." do |jira_use_ssl|
+          options[:jira_use_ssl] = jira_use_ssl
+        end
         opts.on "--jira-api-context CONTEXT", "Specify the context (part after the base url if existing) for the rest api endpoint.  Defaults to empty." do |context|
           options[:jira_api_context] = context
         end

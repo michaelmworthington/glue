@@ -27,9 +27,10 @@ class Glue::JiraReporter < Glue::BaseReporter
       :site         => tracker.options[:jira_api_url],
       :context_path => tracker.options[:jira_api_context],
       :auth_type    => :basic,
-      :http_debug   => :true
+      :http_debug   => tracker.options[:debug],
+      :use_ssl => tracker.options[:jira_use_ssl]
     }
-    
+
     @project = tracker.options[:jira_project]
     @component = tracker.options[:jira_component]
     @jira = JIRA::Client.new(options)
@@ -43,8 +44,12 @@ class Glue::JiraReporter < Glue::BaseReporter
       begin
         issue = @jira.Issue.build
         json = get_jira_json(finding, tracker.options[:jira_skip_fields] || '', tracker.options[:jira_default_priority], tracker.options[:jira_issue_type])
+        # print "###################################################################\n"
+        # print "saving jira\n"
+        # print "###################################################################\n"
         issue.save(json)
       rescue Exception => e
+        # print "apple\n"
         puts "Issue #{e.message}"
       end
     end

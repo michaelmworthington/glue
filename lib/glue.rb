@@ -2,6 +2,8 @@ require 'rubygems'
 require 'yaml'
 require 'set'
 require 'tempfile'
+require 'jira-ruby'
+require 'uri'
 
 module Glue
 
@@ -43,6 +45,10 @@ module Glue
       end
 
       begin
+        #puts "calling jira test"
+        #jiratest options
+        #exit 1
+
         puts "calling scan"
         scan options
       ensure
@@ -233,6 +239,47 @@ module Glue
       puts YAML.dump(options)
     end
     exit
+  end
+
+  def self.jiratest options
+
+    #print "\n\ngo : " + URI::split(uri) + "\n\n"
+    #p URI.split("http://www.ruby-lang.org:8080/rest/api/2")
+    #p URI.split("/rest/api/2")
+
+    options = {
+      :username     => 'admin',
+      :password     => 'admin123',
+      #:site         => 'localhost:59454',
+      :site         => 'http://localhost:8080',
+      :context_path => '',
+      :auth_type    => :basic,
+      #:ssl_verify_mode => OpenSSL::SSL::VERIFY_NONE, 
+      :http_debug   => true,
+      :use_ssl => false
+    }
+
+    client = JIRA::Client.new(options)
+
+    #project = client.Project.find('DP')
+    #project.issues.each do |issue|
+    #  puts "#{issue.id} - #{issue.summary}"
+    #end
+
+    issue = client.Issue.find("DP-34")
+    #puts "Issue: #{issue.attrs}"
+    puts "Issue ID: #{issue.id}"
+    puts "Issue Key: #{issue.key}"
+    puts "Issue Summary: #{issue.summary}"
+    #available_transitions = client.Transition.all(:issue => issue)
+    #available_transitions.each do |ea| 
+    #  puts "#{ea.name} (id #{ea.id})" 
+    #end
+
+    #transition_id = "21"
+    #transition = issue.transitions.build
+    #transition.save!("transition" => {"id" => transition_id})
+
   end
 
   #Run a scan. Generally called from Glue.run instead of directly.

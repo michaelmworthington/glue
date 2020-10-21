@@ -23,11 +23,27 @@ class Glue::JiraOneTimeFilter < Glue::BaseFilter
       :site         => tracker.options[:jira_api_url],
       :context_path => tracker.options[:jira_api_context],
       :auth_type    => :basic,
-      :http_debug   => :true
+      :http_debug   => tracker.options[:debug],
+      :use_ssl => tracker.options[:jira_use_ssl]
+      # https://github.com/sumoheavy/jira-ruby/issues/75
     }
+
+    #print "Jira Site: " + options[:site] + "\n"
+    #puts "Jira Debug: #{options[:http_debug]}"
+    #puts "Jira Use SSL: #{options[:use_ssl]}"
+    
     @project = tracker.options[:jira_project]
     @component = tracker.options[:jira_component]
     @jira = JIRA::Client.new(options)
+
+    # print "###################################################################\n"
+
+    #projects = @jira.Project.all
+    #projects.each do |project|
+    #  print "Project -> key: #{project.key}"
+    #end
+
+    # print "###################################################################\n"
 
     potential_findings = Array.new(tracker.findings)
     tracker.findings.clear
@@ -42,14 +58,24 @@ class Glue::JiraOneTimeFilter < Glue::BaseFilter
   private
   def confirm_new finding
     count = 0
+
+    # print "running jira\n"
+
+    # @jira.Issue.jql("project=#{@project}")
     
     @jira.Issue.jql("project=#{@project} AND description ~ '#{finding.fingerprint}' AND resolution is EMPTY").each do |issue|
-      count = count + 1  # Must have at least 1 issue with fingerprint.
+     count = count + 1  # Must have at least 1 issue with fingerprint.
     end
+
+    # print "###################################################################\n"
+    # print "###################################################################\n"
+
     Glue.debug "Found #{count} items for #{finding.description}"
     if count > 0 then
+      # print "apple\n"
       return false
     else
+      # print "orange\n"
       return true # New!
     end
   end
